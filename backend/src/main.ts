@@ -7,6 +7,9 @@ import { seedData } from './data/seed-data';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Set global prefix for all routes
+  app.setGlobalPrefix('api');
+
   // Enable CORS for frontend
   app.enableCors({
     origin: ['http://localhost:3000', 'http://localhost:3001'],
