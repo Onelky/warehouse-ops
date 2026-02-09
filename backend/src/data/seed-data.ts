@@ -8,6 +8,18 @@ import {
   AssignedUser,
 } from '../common/enums';
 
+/**
+ * Seed the in-memory store with realistic mock data
+ *
+ * Generates:
+ * - 80 orders distributed across all statuses
+ * - 15 inbound shipments with various statuses
+ * - 15 outbound shipments with various statuses
+ * - Realistic timestamps spread throughout the day
+ * - Some delayed shipments (past ETA)
+ *
+ * @param store - InMemoryStoreService instance to populate
+ */
 export function seedData(store: InMemoryStoreService): void {
   console.log('🌱 Seeding data...');
 
