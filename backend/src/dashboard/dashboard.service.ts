@@ -6,6 +6,17 @@ import { OrderStatus, ShipmentStatus, FlowType } from '../common/enums';
 // Constants
 const TOTAL_RACK_CAPACITY = 500; // Total pallets warehouse can hold
 
+
+/** 
+ * Provides aggregated, pre-filtered data for dashboard widgets.
+ * Composes data from OrdersService and ShipmentsService to calculate
+ * statistics and metrics for real-time dashboard display.
+ * 
+ * This service handles:
+ * - Summary KPIs (total orders, on-time percentage)
+ * - Widget-specific data (receiving, picking, put-away, audit, outbound)
+ * - Warehouse capacity calculations
+ */
 @Injectable()
 export class DashboardService {
   constructor(
@@ -109,19 +120,14 @@ export class DashboardService {
       status: OrderStatus.AUDIT_FAILED,
     });
 
-    const ordersWaiting = waitingOrders.length;
-    const ordersBeingAudited = auditingOrders.length;
-    const passedCount = passedOrders.length;
-    const failedCount = failedOrders.length;
-
-    const totalAudited = passedCount + failedCount;
-    const passRate = totalAudited > 0 ? (passedCount / totalAudited) * 100 : 100;
+    const totalAudited = passedOrders.length + failedOrders.length;
+    const passRate = totalAudited > 0 ? (passedOrders.length / totalAudited) * 100 : 100;
 
     return {
-      ordersWaiting,
-      ordersBeingAudited,
-      passedCount,
-      failedCount,
+      ordersWaiting: waitingOrders.length,
+      ordersBeingAudited: auditingOrders.length,
+      passedCount: passedOrders.length,
+      failedCount: failedOrders.length,
       passRate: Math.round(passRate * 10) / 10,
     };
   }
