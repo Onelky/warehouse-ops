@@ -5,10 +5,23 @@ import { UpdateShipmentDto } from './dto/update-shipment.dto';
 import { Shipment, ShipmentWithCalculated } from '../common/interfaces';
 import { ShipmentStatus, FlowType, Carrier, Dock } from '../common/enums';
 
+/**
+ * ShipmentsService
+ *
+ * Business logic for shipment operations.
+ * Provides CRUD operations, filtering capabilities, and calculated fields for shipments.
+ * Automatically adds isDelayed field to all shipments based on ETA vs current time.
+ */
 @Injectable()
 export class ShipmentsService {
   constructor(private readonly store: InMemoryStoreService) {}
 
+  /**
+   * Create a new shipment
+   *
+   * @param createShipmentDto - Shipment data to create
+   * @returns The created shipment with generated ID and timestamps
+   */
   create(createShipmentDto: CreateShipmentDto): Shipment {
     const shipmentData = {
       ...createShipmentDto,
@@ -20,6 +33,16 @@ export class ShipmentsService {
     return this.store.createShipment(shipmentData);
   }
 
+  /**
+   * Find shipments with optional filtering
+   *
+   * @param filters - Optional filters
+   * @param filters.status - Filter by single status or array of statuses
+   * @param filters.flowType - Filter by flow type (INBOUND/OUTBOUND)
+   * @param filters.carrier - Filter by carrier
+   * @param filters.dock - Filter by dock
+   * @returns Array of shipments matching the filters, with isDelayed calculated field
+   */
   find(filters?: {
     status?: ShipmentStatus | ShipmentStatus[];
     flowType?: FlowType;
@@ -49,6 +72,13 @@ export class ShipmentsService {
     return shipments.map((s) => this.addCalculatedFields(s));
   }
 
+  /**
+   * Find a single shipment by ID
+   *
+   * @param id - Shipment ID
+   * @returns The shipment with isDelayed calculated field
+   * @throws NotFoundException if shipment not found
+   */
   findOne(id: string): ShipmentWithCalculated {
     const shipment = this.store.getShipmentById(id);
     if (!shipment) {
@@ -57,6 +87,14 @@ export class ShipmentsService {
     return this.addCalculatedFields(shipment);
   }
 
+  /**
+   * Update an existing shipment
+   *
+   * @param id - Shipment ID
+   * @param updateShipmentDto - Fields to update
+   * @returns The updated shipment with isDelayed calculated field
+   * @throws NotFoundException if shipment not found
+   */
   update(id: string, updateShipmentDto: UpdateShipmentDto): ShipmentWithCalculated {
     const updateData = {
       ...updateShipmentDto,
@@ -73,14 +111,13 @@ export class ShipmentsService {
     return this.addCalculatedFields(shipment);
   }
 
-  remove(id: string): void {
-    const deleted = this.store.deleteShipment(id);
-    if (!deleted) {
-      throw new NotFoundException(`Shipment with ID ${id} not found`);
-    }
-  }
-
-  // Helper to add calculated fields
+  /**
+   * Add calculated fields to a shipment
+   * Private helper method
+   *
+   * @param shipment - Raw shipment data
+   * @returns Shipment with isDelayed field calculated
+   */
   private addCalculatedFields(shipment: Shipment): ShipmentWithCalculated {
     const now = new Date();
     const isDelayed =
