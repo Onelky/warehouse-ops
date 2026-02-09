@@ -8,6 +8,12 @@ import {
   AssignedUser,
 } from '../common/enums';
 
+/**
+ * EnumsController
+ *
+ * Provides enum values for frontend forms and dropdowns.
+ * All endpoints return arrays of string values.
+ */
 @Controller('enums')
 export class EnumsController {
   @Get('order-statuses')

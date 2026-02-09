@@ -24,6 +24,15 @@ export class DashboardService {
     private readonly shipmentsService: ShipmentsService,
   ) {}
 
+  /**
+   * Get summary metrics for the top KPI bar
+   *
+   * @returns Object containing:
+   * - totalOrdersToday: Count of orders created today
+   * - totalUnits: Sum of all units across all orders
+   * - totalPallets: Sum of all pallets across all orders
+   * - onTimePercentage: Percentage of shipments that arrived on or before ETA
+   */
   getSummary() {
     const orders = this.ordersService.find();
     const shipments = this.shipmentsService.find();
@@ -57,6 +66,12 @@ export class DashboardService {
     };
   }
 
+  /**
+   * Get inbound shipments currently at receiving docks
+   *
+   * @returns Array of inbound shipments with status SCHEDULED, ARRIVED, or UNLOADING
+   * Includes isDelayed calculated field
+   */
   getReceiving() {
     // Get inbound shipments with receiving statuses
     return this.shipmentsService.find({
@@ -69,6 +84,15 @@ export class DashboardService {
     });
   }
 
+  /**
+   * Get put-away statistics and warehouse capacity metrics
+   *
+   * @returns Object containing:
+   * - palletsPending: Total pallets waiting to be put away
+   * - palletsInProgress: Total pallets currently being put away
+   * - availableLocations: Number of available rack locations
+   * - warehouseCapacityPercent: Percentage of warehouse capacity used
+   */
   getPutAway() {
     // Get shipments by status
     const pendingShipments = this.shipmentsService.find({
@@ -99,6 +123,11 @@ export class DashboardService {
     };
   }
 
+  /**
+   * Get orders currently in picking status
+   *
+   * @returns Array of orders with status PICKING_PENDING or PICKING_IN_PROGRESS
+   */
   getPicking() {
     // Get orders with picking statuses
     return this.ordersService.find({
@@ -106,6 +135,16 @@ export class DashboardService {
     });
   }
 
+  /**
+   * Get audit statistics and pass rate
+   *
+   * @returns Object containing:
+   * - ordersWaiting: Count of orders waiting for audit
+   * - ordersBeingAudited: Count of orders currently being audited
+   * - passedCount: Count of orders that passed audit
+   * - failedCount: Count of orders that failed audit
+   * - passRate: Percentage of audited orders that passed
+   */
   getAudit() {
     const waitingOrders = this.ordersService.find({
       status: OrderStatus.AUDIT_PENDING,
@@ -132,6 +171,12 @@ export class DashboardService {
     };
   }
 
+  /**
+   * Get outbound shipments ready for shipping
+   *
+   * @returns Array of outbound shipments with status SCHEDULED, READY_TO_SHIP, or LOADING
+   * Includes isDelayed calculated field
+   */
   getOutbound() {
     // Get outbound shipments with outbound statuses
     return this.shipmentsService.find({
