@@ -1,7 +1,6 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
     {
       "type": "node",
       "request": "launch",
@@ -35,18 +34,16 @@
       "cwd": "${workspaceFolder}/frontend",
       "console": "integratedTerminal",
       "skipFiles": ["<node_internals>/**"]
-    }
-  ],
-  "compounds": [
+    },
     {
+      "type": "node",
+      "request": "launch",
       "name": "Full Stack (Frontend + Backend)",
-      "configurations": ["Backend (Dev)", "Frontend (Dev)"],
-      "stopAll": true,
-      "presentation": {
-        "hidden": false,
-        "group": "fullstack",
-        "order": 1
-      }
+      "runtimeArgs": ["-e", "setInterval(function(){}, 999999)"],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "preLaunchTask": "Run Full Stack",
+      "skipFiles": ["<node_internals>/**"]
     }
   ]
 }

@@ -38,7 +38,14 @@ This dashboard is designed to be displayed on large screens throughout a warehou
    - **Pre-Ship Audit**: Audit statistics with pass/fail rates
    - **Outbound**: Scheduled shipments with at-risk highlighting
 
-3. **Real-Time Updates**
+3. **Paginated / Carousel Tables**
+   - Dashboard tables use **auto-rotating carousel pagination** so large lists don’t require scrolling
+   - Pages cycle automatically on a configurable interval (e.g. every 30 seconds)
+   - Fixed rows per page (default 5) with a page indicator (e.g. “Page 1 of 3”)
+   - Suited to wall-mounted or passive displays where users don’t interact with the screen
+   - Resets to page 1 when data changes so new items are shown first
+
+4. **Real-Time Updates**
    - Dashboard updates instantly when data changes
    - WebSocket connection with auto-reconnect
    - Visual connection status indicator
@@ -104,7 +111,7 @@ If you're using VS Code, you can set up and run everything with built-in command
    - Select **"Full Stack (Frontend + Backend)"** from the dropdown
    - Click the green play button
 
-Both servers will start in separate integrated terminals. To stop both, click the stop button or press Shift+F5.
+Both servers will start in two separate terminals. To stop: press **Shift+F5** to end the debug session, then in the **Terminal** panel click the trash icon on each server terminal to stop backend and frontend (or close those terminal tabs).
 
 **How to see all available VS Code tasks:**
 - Press `Ctrl+Shift+P` → Type "Tasks: Run Task" → See full list
@@ -143,7 +150,7 @@ This project includes VS Code configurations for an enhanced development experie
 
 Available configurations in the **Run and Debug** panel (F5):
 
-- **Full Stack (Frontend + Backend)** - Runs both servers simultaneously (recommended)
+- **Full Stack (Frontend + Backend)** - Starts both servers via task, then keeps the session alive (recommended)
 - **Backend (Dev)** - Run backend only in development mode
 - **Backend (Debug)** - Run backend with debugger attached
 - **Frontend (Dev)** - Run frontend only in development mode
@@ -477,11 +484,6 @@ Key fields (including ones added for the dashboard) and how they’re used:
   - Visual warehouse map
   - Location-based picking optimization
 
-- [ ] **Historical Data & Analytics** - Add reporting and trends
-  - Daily/weekly/monthly performance metrics
-  - Throughput analysis by dock, user, carrier
-  - Identify bottlenecks and optimization opportunities
-  - Export reports to CSV/PDF
 
 - [ ] **Mobile Responsive Design** - Optimize for tablets and mobile devices
   - Responsive layouts for smaller screens
@@ -511,11 +513,6 @@ Key fields (including ones added for the dashboard) and how they’re used:
   - Better for low-light warehouse environments
   - Reduce eye strain for long monitoring sessions
   - Automatic theme switching based on time
-
-- [ ] **Multi-Warehouse Support** - Scale to multiple warehouse locations
-  - Warehouse selection/switching
-  - Cross-warehouse inventory visibility
-  - Transfer orders between warehouses
 
 ## Development Notes
 

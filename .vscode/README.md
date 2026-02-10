@@ -76,7 +76,7 @@ Then press `F5` and select **"Full Stack (Frontend + Backend)"**
 ### Daily Development
 
 - Press `F5` to start both servers
-- Press `Shift+F5` to stop all servers
+- Press `Shift+F5` to end the debug session; then in the **Terminal** panel, click the trash icon on each server terminal to stop backend and frontend
 - Use the Debug Console to see combined output
 
 ## Files Overview
@@ -85,7 +85,7 @@ Then press `F5` and select **"Full Stack (Frontend + Backend)"**
 Debug and run configurations for the project.
 
 **Configurations:**
-- **Full Stack (Frontend + Backend)** - Compound configuration that runs both servers
+- **Full Stack (Frontend + Backend)** - Runs the "Run Full Stack" task (starts both servers in separate terminals), then keeps the session alive
 - **Backend (Dev)** - NestJS backend in development mode (port 3001)
 - **Backend (Debug)** - NestJS backend with debugger attached
 - **Frontend (Dev)** - Next.js frontend in development mode (port 3000)
@@ -173,7 +173,8 @@ Check the **Debug Console** panel at the bottom of VS Code for combined output f
 2. **Daily**: 
    - `F5` → Select "Full Stack (Frontend + Backend)"
 3. **Stop**: 
-   - `Shift+F5`
+   - `Shift+F5` (ends debug session)
+   - Then in the **Terminal** panel, click the trash icon on each server terminal to stop backend and frontend
 
 ## Tips
 
