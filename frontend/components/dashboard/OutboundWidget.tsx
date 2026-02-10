@@ -2,93 +2,61 @@
 
 import { useOutbound } from '@/hooks/dashboard';
 import { ShipmentStatus } from '@/lib/types';
+import { CarouselTable, TableColumn } from '@/components/ui/CarouselTable';
 
 export function OutboundWidget() {
   const { data, isLoading, error } = useOutbound();
 
-  if (isLoading) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Outbound</h2>
-        <div className="animate-pulse space-y-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-12 bg-gray-200 rounded"></div>
-          ))}
+  const columns: TableColumn[] = [
+    {
+      header: 'Carrier',
+      dataField: 'carrier',
+      render: (value, row) => (
+        <div className="flex items-center gap-1">
+          {row.isDelayed && <span className="text-red-500 text-xs" title="At Risk">⚠️</span>}
+          {value}
         </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Outbound</h2>
-        <div className="bg-red-50 border border-red-200 rounded p-4">
-          <p className="text-red-800 text-sm">Failed to load data</p>
-        </div>
-      </div>
-    );
-  }
+      ),
+    },
+    {
+      header: 'Dock',
+      dataField: 'dock',
+      render: (value) => value.replace('_', ' '),
+    },
+    {
+      header: 'Pallets',
+      dataField: 'pallets',
+    },
+    {
+      header: 'Status',
+      dataField: 'status',
+      render: (value, row) => <StatusBadge status={value} isDelayed={row.isDelayed} />,
+    },
+    {
+      header: 'ETA',
+      dataField: 'eta',
+      render: (value) =>
+        new Date(value).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        }),
+      className: 'py-2 px-2 text-sm text-gray-600',
+    },
+  ];
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
-      <h2 className="text-lg font-bold mb-3 text-gray-800">Outbound</h2>
-      
-      {!data || data.length === 0 ? (
-        <p className="text-gray-500 text-center py-4 text-sm">No scheduled outbound shipments</p>
-      ) : (
-        <>
-          <div className="flex-1 overflow-x-auto">
-            <table className="min-w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Carrier</th>
-                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Dock</th>
-                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Pallets</th>
-                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Status</th>
-                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">ETA</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((shipment) => (
-                  <tr 
-                    key={shipment.id} 
-                    className={`border-b border-gray-100 hover:bg-gray-50 ${
-                      shipment.isDelayed ? 'bg-red-50' : ''
-                    }`}
-                  >
-                    <td className="py-2 px-2 text-sm">
-                      <div className="flex items-center gap-1">
-                        {shipment.isDelayed && (
-                          <span className="text-red-500 text-xs" title="At Risk">⚠️</span>
-                        )}
-                        {shipment.carrier}
-                      </div>
-                    </td>
-                    <td className="py-2 px-2 text-sm">{shipment.dock.replace('_', ' ')}</td>
-                    <td className="py-2 px-2 text-sm">{shipment.pallets}</td>
-                    <td className="py-2 px-2">
-                      <StatusBadge status={shipment.status} isDelayed={shipment.isDelayed} />
-                    </td>
-                    <td className="py-2 px-2 text-sm text-gray-600">
-                      {new Date(shipment.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {data.some(s => s.isDelayed) && (
-            <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-2">
-              <p className="text-red-800 text-xs font-medium">
-                ⚠️ {data.filter(s => s.isDelayed).length} shipment(s) at risk
-              </p>
-            </div>
-          )}
-        </>
-      )}
-    </div>
+    <CarouselTable
+      title="Outbound"
+      columns={columns}
+      data={data}
+      rowsPerPage={5}
+      intervalMs={5000} // 5 seconds for testing (change to 30000 for production)
+      isLoading={isLoading}
+      error={error}
+      emptyMessage="No scheduled outbound shipments"
+      getRowKey={(row) => row.id}
+      getRowClassName={(row) => (row.isDelayed ? 'bg-red-50' : '')}
+    />
   );
 }
 
@@ -105,7 +73,9 @@ function StatusBadge({ status, isDelayed }: { status: ShipmentStatus; isDelayed:
     [ShipmentStatus.CLOSED]: 'bg-gray-100 text-gray-800',
   };
 
-  const colorClass = isDelayed ? 'bg-red-100 text-red-800 border border-red-300' : statusColors[status];
+  const colorClass = isDelayed
+    ? 'bg-red-100 text-red-800 border border-red-300'
+    : statusColors[status];
 
   return (
     <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>

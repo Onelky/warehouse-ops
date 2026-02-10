@@ -11,7 +11,7 @@ export function useTableCarousel<T>(
   data: T[] | undefined,
   options: UseTableCarouselOptions = {}
 ) {
-  const { rowsPerPage = 5, intervalMs = 10000 } = options;
+  const { rowsPerPage = 5, intervalMs = 2000 } = options;
   
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -26,13 +26,18 @@ export function useTableCarousel<T>(
   // Auto-rotate through pages
   useEffect(() => {
     if (!data || data.length === 0 || totalPages <= 1) {
+      console.log(`[Carousel] Not rotating: data length=${data?.length}, totalPages=${totalPages}`);
       return; // Don't rotate if no data or only one page
     }
+
+    console.log(`[Carousel] Starting rotation: ${data.length} items, ${totalPages} pages, interval=${intervalMs}ms`);
 
     const interval = setInterval(() => {
       setCurrentPage((prevPage) => {
         const nextPage = prevPage + 1;
-        return nextPage >= totalPages ? 0 : nextPage;
+        const newPage = nextPage >= totalPages ? 0 : nextPage;
+        console.log(`[Carousel] Rotating from page ${prevPage + 1} to page ${newPage + 1}`);
+        return newPage;
       });
     }, intervalMs);
 
