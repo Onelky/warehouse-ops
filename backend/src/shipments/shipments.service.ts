@@ -4,6 +4,7 @@ import { CreateShipmentDto } from './dto/create-shipment.dto';
 import { UpdateShipmentDto } from './dto/update-shipment.dto';
 import { Shipment, ShipmentWithCalculated } from '../common/interfaces';
 import { ShipmentStatus, FlowType, Carrier, Dock } from '../common/enums';
+import { ShipmentsGateway } from './shipments.gateway';
 
 /**
  * ShipmentsService
@@ -14,8 +15,10 @@ import { ShipmentStatus, FlowType, Carrier, Dock } from '../common/enums';
  */
 @Injectable()
 export class ShipmentsService {
-  constructor(private readonly store: InMemoryStoreService) {}
-
+  constructor(
+    private readonly store: InMemoryStoreService,
+    private readonly gateway: ShipmentsGateway, 
+  ) {}
   /**
    * Create a new shipment
    *
@@ -30,8 +33,12 @@ export class ShipmentsService {
         ? new Date(createShipmentDto.actualArrivalTime)
         : undefined,
     };
-    return this.store.createShipment(shipmentData);
-  }
+
+    const shipment = this.store.createShipment(shipmentData);
+    const shipmentWithCalculated = this.addCalculatedFields(shipment);
+
+    this.gateway.emitShipmentCreated(shipmentWithCalculated);
+    return shipment;  }
 
   /**
    * Find shipments with optional filtering
@@ -108,7 +115,10 @@ export class ShipmentsService {
     if (!shipment) {
       throw new NotFoundException(`Shipment with ID ${id} not found`);
     }
-    return this.addCalculatedFields(shipment);
+
+    const shipmentWithCalculated = this.addCalculatedFields(shipment);
+    this.gateway.emitShipmentUpdated(shipmentWithCalculated);  // ADD THIS
+    return shipmentWithCalculated;
   }
 
   /**
