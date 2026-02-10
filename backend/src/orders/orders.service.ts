@@ -4,6 +4,7 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { Order } from '../common/interfaces';
 import { OrderStatus, AssignedUser } from '../common/enums';
+import { OrdersGateway } from './orders.gateway';
 
 /**
  * OrdersService
@@ -13,8 +14,10 @@ import { OrderStatus, AssignedUser } from '../common/enums';
  */
 @Injectable()
 export class OrdersService {
-  constructor(private readonly store: InMemoryStoreService) {}
-
+  constructor(
+    private readonly store: InMemoryStoreService,
+    private readonly gateway: OrdersGateway,  
+  ) {}
   /**
    * Create a new order
    *
@@ -22,9 +25,10 @@ export class OrdersService {
    * @returns The created order with generated ID and timestamps
    */
   create(createOrderDto: CreateOrderDto): Order {
-    return this.store.createOrder(createOrderDto);
+    const order = this.store.createOrder(createOrderDto);
+    this.gateway.emitOrderCreated(order); 
+    return order;
   }
-
   /**
    * Find orders with optional filtering
    *
@@ -80,6 +84,7 @@ export class OrdersService {
     if (!order) {
       throw new NotFoundException(`Order with ID ${id} not found`);
     }
+    this.gateway.emitOrderUpdated(order); 
     return order;
   }
 }
