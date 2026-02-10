@@ -12,11 +12,15 @@ import {
  * Seed the in-memory store with realistic mock data
  *
  * Generates:
- * - 30 orders distributed across all statuses
- * - 15 inbound shipments with various statuses
- * - 15 outbound shipments with various statuses
+ * - 80 orders (varied distribution across 12 statuses)
+ * - 30 inbound shipments (5 per status, 6 statuses)
+ * - 20 outbound shipments (5 per status, 4 statuses)
  * - Realistic timestamps spread throughout the day
- * - Some delayed shipments (past ETA)
+ * - One delayed shipment per status for testing
+ *
+ * Distribution focuses on active workflow stages:
+ * - More orders in PICKING_PENDING (12) and AUDIT_PASSED (15)
+ * - Fewer in transitional states like AUDIT_IN_PROGRESS (3)
  *
  * @param store - InMemoryStoreService instance to populate
  */
@@ -44,40 +48,55 @@ export function seedData(store: InMemoryStoreService): void {
   };
 
   // ==================== SEED ORDERS ====================
-  const orderStatuses = Object.values(OrderStatus);
   const assignedUsers = Object.values(AssignedUser);
 
-  // Create 80 orders distributed across statuses
-  for (let i = 0; i < 80; i++) {
-    const status = random(orderStatuses);
-    const hasUser = [
-      OrderStatus.PICKING_IN_PROGRESS,
-      OrderStatus.PICKED,
-      OrderStatus.AUDIT_IN_PROGRESS,
-    ].includes(status);
+  // Create varied number of orders per status for realistic distribution
+  const orderStatusCounts = [
+    { status: OrderStatus.CREATED, count: 8 },
+    { status: OrderStatus.PICKING_PENDING, count: 12 },
+    { status: OrderStatus.PICKING_IN_PROGRESS, count: 7 },
+    { status: OrderStatus.PICKED, count: 5 },
+    { status: OrderStatus.AUDIT_PENDING, count: 6 },
+    { status: OrderStatus.AUDIT_IN_PROGRESS, count: 3 },
+    { status: OrderStatus.AUDIT_PASSED, count: 15 },
+    { status: OrderStatus.AUDIT_FAILED, count: 2 },
+    { status: OrderStatus.SHIPPING_PENDING, count: 4 },
+    { status: OrderStatus.SHIPPING, count: 3 },
+    { status: OrderStatus.SHIPPED, count: 10 },
+    { status: OrderStatus.CLOSED, count: 5 },
+  ];
 
-    // Create timestamp spread throughout today (0-12 hours ago)
-    const createdAt = hoursAgo(randomInt(0, 12));
+  orderStatusCounts.forEach(({ status, count }) => {
+    for (let i = 0; i < count; i++) {
+      const hasUser = [
+        OrderStatus.PICKING_IN_PROGRESS,
+        OrderStatus.PICKED,
+        OrderStatus.AUDIT_IN_PROGRESS,
+      ].includes(status);
 
-    const order = store.createOrder({
-      status,
-      units: randomInt(10, 500),
-      pallets: randomInt(1, 10),
-      assignedUser: hasUser ? random(assignedUsers) : undefined,
-      priorityScore: randomInt(50, 100),
-      healthScore: undefined, // TODO: Calculate later
-    });
+      // Create timestamp spread throughout today (0-12 hours ago)
+      const createdAt = hoursAgo(randomInt(0, 12));
 
-    // Override timestamps to be within today
-    order.createdAt = createdAt;
-    order.updatedAt = createdAt;
-  }
+      const order = store.createOrder({
+        status,
+        units: randomInt(10, 500),
+        pallets: randomInt(1, 10),
+        assignedUser: hasUser ? random(assignedUsers) : undefined,
+        priorityScore: randomInt(50, 100),
+        healthScore: undefined,
+      });
+
+      // Override timestamps to be within today
+      order.createdAt = createdAt;
+      order.updatedAt = createdAt;
+    }
+  });
 
   // ==================== SEED INBOUND SHIPMENTS ====================
   const carriers = Object.values(Carrier);
   const docks = Object.values(Dock);
 
-  // Create 15 inbound shipments
+  // Create 5 inbound shipments for each status (6 statuses × 5 = 30 shipments)
   const inboundStatuses = [
     ShipmentStatus.SCHEDULED,
     ShipmentStatus.ARRIVED,
@@ -87,35 +106,37 @@ export function seedData(store: InMemoryStoreService): void {
     ShipmentStatus.STORED,
   ];
 
-  for (let i = 0; i < 15; i++) {
-    const status = random(inboundStatuses);
-    const isArrived = [
-      ShipmentStatus.ARRIVED,
-      ShipmentStatus.UNLOADING,
-      ShipmentStatus.PUT_AWAY_PENDING,
-      ShipmentStatus.PUT_AWAY_IN_PROGRESS,
-      ShipmentStatus.STORED,
-    ].includes(status);
+  inboundStatuses.forEach((status) => {
+    for (let i = 0; i < 5; i++) {
+      const isArrived = [
+        ShipmentStatus.ARRIVED,
+        ShipmentStatus.UNLOADING,
+        ShipmentStatus.PUT_AWAY_PENDING,
+        ShipmentStatus.PUT_AWAY_IN_PROGRESS,
+        ShipmentStatus.STORED,
+      ].includes(status);
 
-    // Some shipments are delayed (ETA in the past)
-    const isDelayed = Math.random() < 0.2; // 20% chance
-    const eta = isDelayed ? hoursAgo(randomInt(1, 3)) : hoursFromNow(randomInt(1, 8));
+      // First one of each status is delayed
+      const isDelayed = i === 0;
+      const eta = isDelayed ? hoursAgo(randomInt(1, 3)) : hoursFromNow(randomInt(1, 8));
 
-    const shipment = store.createShipment({
-      carrier: random(carriers),
-      eta,
-      actualArrivalTime: isArrived ? hoursAgo(randomInt(1, 6)) : undefined,
-      pallets: randomInt(5, 30),
-      dock: random(docks),
-      status,
-      flowType: FlowType.INBOUND,
-    });
+      const shipment = store.createShipment({
+        carrier: random(carriers),
+        eta,
+        actualArrivalTime: isArrived ? hoursAgo(randomInt(1, 6)) : undefined,
+        pallets: randomInt(5, 30),
+        dock: random(docks),
+        status,
+        flowType: FlowType.INBOUND,
+      });
 
-    shipment.createdAt = hoursAgo(randomInt(2, 24));
-    shipment.updatedAt = shipment.createdAt;
-  }
+      shipment.createdAt = hoursAgo(randomInt(2, 24));
+      shipment.updatedAt = shipment.createdAt;
+    }
+  });
 
   // ==================== SEED OUTBOUND SHIPMENTS ====================
+  // Create 5 outbound shipments for each status (4 statuses × 5 = 20 shipments)
   const outboundStatuses = [
     ShipmentStatus.SCHEDULED,
     ShipmentStatus.READY_TO_SHIP,
@@ -123,26 +144,26 @@ export function seedData(store: InMemoryStoreService): void {
     ShipmentStatus.CLOSED,
   ];
 
-  for (let i = 0; i < 15; i++) {
-    const status = random(outboundStatuses);
+  outboundStatuses.forEach((status) => {
+    for (let i = 0; i < 5; i++) {
+      // First one of each status is delayed
+      const isDelayed = i === 0;
+      const eta = isDelayed ? hoursAgo(randomInt(1, 2)) : hoursFromNow(randomInt(2, 12));
 
-    // Some outbound shipments are delayed
-    const isDelayed = Math.random() < 0.15; // 15% chance
-    const eta = isDelayed ? hoursAgo(randomInt(1, 2)) : hoursFromNow(randomInt(2, 12));
+      const shipment = store.createShipment({
+        carrier: random(carriers),
+        eta,
+        actualArrivalTime: undefined,
+        pallets: randomInt(3, 20),
+        dock: random(docks),
+        status,
+        flowType: FlowType.OUTBOUND,
+      });
 
-    const shipment = store.createShipment({
-      carrier: random(carriers),
-      eta,
-      actualArrivalTime: undefined, // Outbound doesn't use actualArrivalTime
-      pallets: randomInt(3, 20),
-      dock: random(docks),
-      status,
-      flowType: FlowType.OUTBOUND,
-    });
-
-    shipment.createdAt = hoursAgo(randomInt(1, 12));
-    shipment.updatedAt = shipment.createdAt;
-  }
+      shipment.createdAt = hoursAgo(randomInt(1, 12));
+      shipment.updatedAt = shipment.createdAt;
+    }
+  });
 
   const stats = store.getStats();
   console.log(`✅ Seeded ${stats.ordersCount} orders and ${stats.shipmentsCount} shipments`);
