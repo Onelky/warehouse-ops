@@ -7,7 +7,9 @@ A real-time warehouse operations dashboard that displays current warehouse activ
 This dashboard is designed to be displayed on large screens throughout a warehouse and auto-updates as activity changes via WebSocket connections.
 
 
-![Dashboard](docs/screenshots/dashboard.png) 
+![Dashboard](docs/screenshots/dashboard.png)
+
+
 ## Tech Stack
 
 ### Backend (NestJS)
