@@ -1,13 +1,15 @@
 'use client';
 
 import { useReceiving } from '@/hooks/dashboard';
-import { ShipmentStatus } from '@/lib/types';
+import { useResponsiveRows } from '@/hooks/useResponsiveRows';
+import { ShipmentStatus, ReceivingShipment } from '@/lib/types';
 import { CarouselTable, TableColumn } from '@/components/ui/CarouselTable';
 
 export function ReceivingWidget() {
   const { data, isLoading, error } = useReceiving();
+  const rowsPerPage = useResponsiveRows();
 
-  const columns: TableColumn[] = [
+  const columns: TableColumn<ReceivingShipment>[] = [
     {
       header: 'Carrier',
       dataField: 'carrier',
@@ -19,18 +21,18 @@ export function ReceivingWidget() {
     {
       header: 'Dock',
       dataField: 'dock',
-      render: (value) => value.replace('_', ' '),
+      render: (value) => (value as string).replace('_', ' '),
     },
     {
       header: 'Status',
       dataField: 'status',
-      render: (value) => <StatusBadge status={value} />,
+      render: (value) => <StatusBadge status={value as ShipmentStatus} />,
     },
     {
       header: 'ETA',
       dataField: 'eta',
       render: (value) =>
-        new Date(value).toLocaleTimeString([], {
+        new Date(value as string).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         }),
@@ -43,7 +45,7 @@ export function ReceivingWidget() {
       title="Receiving"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={rowsPerPage}
       intervalMs={5000} // 5 seconds for testing (change to 30000 for production)
       isLoading={isLoading}
       error={error}

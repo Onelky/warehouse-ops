@@ -1,27 +1,29 @@
 'use client';
 
 import { useOutbound } from '@/hooks/dashboard';
-import { ShipmentStatus } from '@/lib/types';
+import { useResponsiveRows } from '@/hooks/useResponsiveRows';
+import { OutboundShipment, ShipmentStatus } from '@/lib/types';
 import { CarouselTable, TableColumn } from '@/components/ui/CarouselTable';
 
 export function OutboundWidget() {
   const { data, isLoading, error } = useOutbound();
+  const rowsPerPage = useResponsiveRows();
 
-  const columns: TableColumn[] = [
+  const columns: TableColumn<OutboundShipment>[] = [
     {
       header: 'Carrier',
       dataField: 'carrier',
       render: (value, row) => (
         <div className="flex items-center gap-1">
           {row.isDelayed && <span className="text-red-500 text-xs" title="At Risk">⚠️</span>}
-          {value}
+          {value as string}
         </div>
       ),
     },
     {
       header: 'Dock',
       dataField: 'dock',
-      render: (value) => value.replace('_', ' '),
+      render: (value) => (value as string).replace('_', ' '),
     },
     {
       header: 'Pallets',
@@ -30,13 +32,13 @@ export function OutboundWidget() {
     {
       header: 'Status',
       dataField: 'status',
-      render: (value, row) => <StatusBadge status={value} isDelayed={row.isDelayed} />,
+      render: (value, row) => <StatusBadge status={value as ShipmentStatus} isDelayed={row.isDelayed} />,
     },
     {
       header: 'ETA',
       dataField: 'eta',
       render: (value) =>
-        new Date(value).toLocaleTimeString([], {
+        new Date(value as string).toLocaleTimeString([], {
           hour: '2-digit',
           minute: '2-digit',
         }),
@@ -49,7 +51,7 @@ export function OutboundWidget() {
       title="Outbound"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={rowsPerPage}
       intervalMs={5000} // 5 seconds for testing (change to 30000 for production)
       isLoading={isLoading}
       error={error}

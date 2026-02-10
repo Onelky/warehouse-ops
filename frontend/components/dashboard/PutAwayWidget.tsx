@@ -7,8 +7,8 @@ export function PutAwayWidget() {
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Put Away</h2>
+      <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
+        <h2 className="text-lg font-bold mb-3 text-gray-800">Put Away</h2>
         <div className="animate-pulse space-y-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="h-16 bg-gray-200 rounded"></div>
@@ -20,8 +20,8 @@ export function PutAwayWidget() {
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold mb-4 text-gray-800">Put Away</h2>
+      <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
+        <h2 className="text-lg font-bold mb-3 text-gray-800">Put Away</h2>
         <div className="bg-red-50 border border-red-200 rounded p-4">
           <p className="text-red-800 text-sm">Failed to load data</p>
         </div>
@@ -37,7 +37,7 @@ export function PutAwayWidget() {
     'text-green-600';
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+    <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
       <h2 className="text-lg font-bold mb-3 text-gray-800">Put Away</h2>
       
       <div className="space-y-2 flex-1">

@@ -1,25 +1,30 @@
 'use client';
 
 import { usePicking } from '@/hooks/dashboard';
-import { OrderStatus } from '@/lib/types';
+import { useResponsiveRows } from '@/hooks/useResponsiveRows';
+import { OrderStatus, PickingOrder } from '@/lib/types';
 import { CarouselTable, TableColumn } from '@/components/ui/CarouselTable';
 
 export function PickingWidget() {
   const { data, isLoading, error } = usePicking();
+  const rowsPerPage = useResponsiveRows();
 
-  const columns: TableColumn[] = [
+  const columns: TableColumn<PickingOrder>[] = [
     {
       header: 'Order ID',
       dataField: 'id',
       render: (value) => (
-        <span className="font-mono text-gray-600">{value.substring(0, 8)}...</span>
+        <span className="font-mono text-gray-600">{(value as string).substring(0, 8)}...</span>
       ),
       className: 'py-2 px-2 text-xs',
     },
     {
       header: 'Picker',
       dataField: 'assignedUser',
-      render: (value: string) => (value ? value.replace('_', ' ') : 'Unassigned'),
+      render: (value) => {
+        const user = value as string | undefined;
+        return user ? user.replace('_', ' ') : 'Unassigned';
+      },
     },
     {
       header: 'Units',
@@ -32,13 +37,15 @@ export function PickingWidget() {
     {
       header: 'Priority',
       dataField: 'priorityScore',
-      render: (value) =>
-        value ? <PriorityBadge score={value} /> : <span className="text-gray-400 text-xs">-</span>,
+      render: (value) => {
+        const score = value as number | undefined;
+        return score ? <PriorityBadge score={score} /> : <span className="text-gray-400 text-xs">-</span>;
+      },
     },
     {
       header: 'Status',
       dataField: 'status',
-      render: (value) => <StatusBadge status={value} />,
+      render: (value) => <StatusBadge status={value as OrderStatus} />,
     },
   ];
 
@@ -47,7 +54,7 @@ export function PickingWidget() {
       title="Picking"
       columns={columns}
       data={data}
-      rowsPerPage={5}
+      rowsPerPage={rowsPerPage}
       intervalMs={5000} // 5 seconds for testing (change to 30000 for production)
       isLoading={isLoading}
       error={error}
