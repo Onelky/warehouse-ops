@@ -2,7 +2,7 @@
 
 import { useTableCarousel } from '@/hooks/useTableCarousel';
 
-export interface TableColumn<T = never> {
+export interface TableColumn<T> {
   header: string;
   dataField: keyof T;
   render?: (value: T[keyof T], row: T) => React.ReactNode;
@@ -10,20 +10,20 @@ export interface TableColumn<T = never> {
   headerClassName?: string;
 }
 
-interface CarouselTableProps<T = never> {
+interface CarouselTableProps<T> {
   title: string;
   columns: TableColumn<T>[];
   data: T[] | undefined;
   rowsPerPage?: number;
   intervalMs?: number;
   isLoading?: boolean;
-  error?: any;
+  error?: Error | null;
   emptyMessage?: string;
   getRowKey: (row: T) => string;
   getRowClassName?: (row: T) => string;
 }
 
-export function CarouselTable<T = never>({
+export function CarouselTable<T>({
   title,
   columns,
   data,
@@ -99,12 +99,17 @@ export function CarouselTable<T = never>({
                   >
                     {columns.map((column, index) => {
                       const value = row[column.dataField];
+                      const displayValue = column.render 
+                        ? column.render(value, row) 
+                        : (typeof value === 'string' || typeof value === 'number' 
+                            ? value 
+                            : JSON.stringify(value));
                       return (
                         <td
                           key={index}
                           className={column.className || 'py-2 px-2 text-sm'}
                         >
-                          {column.render ? column.render(value, row) : value}
+                          {displayValue}
                         </td>
                       );
                     })}
