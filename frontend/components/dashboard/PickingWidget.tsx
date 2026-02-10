@@ -31,43 +31,43 @@ export function PickingWidget() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Picking</h2>
+    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <h2 className="text-lg font-bold mb-3 text-gray-800">Picking</h2>
       
       {!data || data.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No active picking orders</p>
+        <p className="text-gray-500 text-center py-4 text-sm">No active picking orders</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="flex-1 overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Order ID</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Picker</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Units</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Pallets</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Priority</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Status</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Order ID</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Picker</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Units</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Pallets</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Priority</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Status</th>
               </tr>
             </thead>
             <tbody>
               {data.map((order) => (
                 <tr key={order.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-3 text-sm font-mono text-gray-600">
+                  <td className="py-2 px-2 text-xs font-mono text-gray-600">
                     {order.id.substring(0, 8)}...
                   </td>
-                  <td className="py-3 px-3 text-sm">
+                  <td className="py-2 px-2 text-sm">
                     {order.assignedUser ? order.assignedUser.replace('_', ' ') : 'Unassigned'}
                   </td>
-                  <td className="py-3 px-3 text-sm">{order.units}</td>
-                  <td className="py-3 px-3 text-sm">{order.pallets}</td>
-                  <td className="py-3 px-3">
+                  <td className="py-2 px-2 text-sm">{order.units}</td>
+                  <td className="py-2 px-2 text-sm">{order.pallets}</td>
+                  <td className="py-2 px-2">
                     {order.priorityScore ? (
                       <PriorityBadge score={order.priorityScore} />
                     ) : (
-                      <span className="text-gray-400 text-sm">-</span>
+                      <span className="text-gray-400 text-xs">-</span>
                     )}
                   </td>
-                  <td className="py-3 px-3">
+                  <td className="py-2 px-2">
                     <StatusBadge status={order.status} />
                   </td>
                 </tr>

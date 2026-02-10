@@ -77,27 +77,22 @@ export default function DashboardPage() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1920px] mx-auto px-6 py-6">
+      <main className="max-w-[1920px] mx-auto px-6 py-4">
         {/* Summary Metrics */}
         <SummaryMetrics />
 
-        {/* Operational Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {/* Receiving */}
+        {/* Operational Columns - 2 rows of 3 columns each */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          {/* Row 1 */}
           <ReceivingWidget />
-
-          {/* Put Away */}
           <PutAwayWidget />
-
-          {/* Picking */}
           <PickingWidget />
 
-          {/* Audit */}
+          {/* Row 2 */}
           <AuditWidget />
-
-          {/* Outbound */}
-          <div className="xl:col-span-2">
-            <OutboundWidget />
+          <OutboundWidget />
+          <div className="bg-white rounded-lg shadow p-4 h-[280px] flex items-center justify-center text-gray-400">
+            <p className="text-sm">Additional Widget Space</p>
           </div>
         </div>
       </main>

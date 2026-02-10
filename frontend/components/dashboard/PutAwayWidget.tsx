@@ -37,10 +37,10 @@ export function PutAwayWidget() {
     'text-green-600';
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Put Away</h2>
+    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <h2 className="text-lg font-bold mb-3 text-gray-800">Put Away</h2>
       
-      <div className="space-y-4">
+      <div className="space-y-2 flex-1">
         <StatRow
           label="Pallets Pending"
           value={data.palletsPending}
@@ -57,16 +57,16 @@ export function PutAwayWidget() {
           color="green"
         />
         
-        <div className="pt-4 border-t border-gray-200">
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-sm font-medium text-gray-700">Warehouse Capacity</span>
-            <span className={`text-2xl font-bold ${capacityColor}`}>
+        <div className="pt-2 border-t border-gray-200">
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-medium text-gray-700">Warehouse Capacity</span>
+            <span className={`text-xl font-bold ${capacityColor}`}>
               {data.warehouseCapacityPercent.toFixed(1)}%
             </span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-4">
+          <div className="w-full bg-gray-200 rounded-full h-3">
             <div
-              className={`h-4 rounded-full transition-all ${
+              className={`h-3 rounded-full transition-all ${
                 data.warehouseCapacityPercent >= 90 ? 'bg-red-500' :
                 data.warehouseCapacityPercent >= 75 ? 'bg-yellow-500' :
                 'bg-green-500'
@@ -94,9 +94,9 @@ function StatRow({ label, value, color }: StatRowProps) {
   };
 
   return (
-    <div className={`flex justify-between items-center p-4 rounded-lg border ${colorClasses[color]}`}>
-      <span className="font-medium">{label}</span>
-      <span className="text-2xl font-bold">{value}</span>
+    <div className={`flex justify-between items-center p-2 rounded-lg border ${colorClasses[color]}`}>
+      <span className="text-sm font-medium">{label}</span>
+      <span className="text-xl font-bold">{value}</span>
     </div>
   );
 }

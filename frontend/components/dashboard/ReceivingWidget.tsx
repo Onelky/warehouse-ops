@@ -15,33 +15,33 @@ export function ReceivingWidget() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Receiving</h2>
+    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <h2 className="text-lg font-bold mb-3 text-gray-800">Receiving</h2>
       
       {!data || data.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No shipments at dock</p>
+        <p className="text-gray-500 text-center py-4 text-sm">No shipments at dock</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="flex-1 overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Carrier</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Pallets</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Dock</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Status</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">ETA</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Carrier</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Pallets</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Dock</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Status</th>
+                <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">ETA</th>
               </tr>
             </thead>
             <tbody>
               {data.map((shipment) => (
                 <tr key={shipment.id} className="border-b border-gray-100 hover:bg-gray-50">
-                  <td className="py-3 px-3 text-sm">{shipment.carrier}</td>
-                  <td className="py-3 px-3 text-sm">{shipment.pallets}</td>
-                  <td className="py-3 px-3 text-sm">{shipment.dock.replace('_', ' ')}</td>
-                  <td className="py-3 px-3">
+                  <td className="py-2 px-2 text-sm">{shipment.carrier}</td>
+                  <td className="py-2 px-2 text-sm">{shipment.pallets}</td>
+                  <td className="py-2 px-2 text-sm">{shipment.dock.replace('_', ' ')}</td>
+                  <td className="py-2 px-2">
                     <StatusBadge status={shipment.status} />
                   </td>
-                  <td className="py-3 px-3 text-sm text-gray-600">
+                  <td className="py-2 px-2 text-sm text-gray-600">
                     {new Date(shipment.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </td>
                 </tr>

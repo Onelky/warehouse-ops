@@ -31,60 +31,62 @@ export function OutboundWidget() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h2 className="text-xl font-bold mb-4 text-gray-800">Outbound</h2>
+    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <h2 className="text-lg font-bold mb-3 text-gray-800">Outbound</h2>
       
       {!data || data.length === 0 ? (
-        <p className="text-gray-500 text-center py-8">No scheduled outbound shipments</p>
+        <p className="text-gray-500 text-center py-4 text-sm">No scheduled outbound shipments</p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Carrier</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Dock</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Pallets</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">Status</th>
-                <th className="text-left py-2 px-3 text-sm font-semibold text-gray-700">ETA</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((shipment) => (
-                <tr 
-                  key={shipment.id} 
-                  className={`border-b border-gray-100 hover:bg-gray-50 ${
-                    shipment.isDelayed ? 'bg-red-50' : ''
-                  }`}
-                >
-                  <td className="py-3 px-3 text-sm">
-                    <div className="flex items-center gap-2">
-                      {shipment.isDelayed && (
-                        <span className="text-red-500 font-bold" title="At Risk">⚠️</span>
-                      )}
-                      {shipment.carrier}
-                    </div>
-                  </td>
-                  <td className="py-3 px-3 text-sm">{shipment.dock.replace('_', ' ')}</td>
-                  <td className="py-3 px-3 text-sm">{shipment.pallets}</td>
-                  <td className="py-3 px-3">
-                    <StatusBadge status={shipment.status} isDelayed={shipment.isDelayed} />
-                  </td>
-                  <td className="py-3 px-3 text-sm text-gray-600">
-                    {new Date(shipment.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </td>
+        <>
+          <div className="flex-1 overflow-x-auto">
+            <table className="min-w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Carrier</th>
+                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Dock</th>
+                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Pallets</th>
+                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">Status</th>
+                  <th className="text-left py-1 px-2 text-xs font-semibold text-gray-700">ETA</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      
-      {data && data.some(s => s.isDelayed) && (
-        <div className="mt-4 bg-red-50 border border-red-200 rounded-lg p-3">
-          <p className="text-red-800 text-sm font-medium">
-            ⚠️ {data.filter(s => s.isDelayed).length} shipment(s) at risk
-          </p>
-        </div>
+              </thead>
+              <tbody>
+                {data.map((shipment) => (
+                  <tr 
+                    key={shipment.id} 
+                    className={`border-b border-gray-100 hover:bg-gray-50 ${
+                      shipment.isDelayed ? 'bg-red-50' : ''
+                    }`}
+                  >
+                    <td className="py-2 px-2 text-sm">
+                      <div className="flex items-center gap-1">
+                        {shipment.isDelayed && (
+                          <span className="text-red-500 text-xs" title="At Risk">⚠️</span>
+                        )}
+                        {shipment.carrier}
+                      </div>
+                    </td>
+                    <td className="py-2 px-2 text-sm">{shipment.dock.replace('_', ' ')}</td>
+                    <td className="py-2 px-2 text-sm">{shipment.pallets}</td>
+                    <td className="py-2 px-2">
+                      <StatusBadge status={shipment.status} isDelayed={shipment.isDelayed} />
+                    </td>
+                    <td className="py-2 px-2 text-sm text-gray-600">
+                      {new Date(shipment.eta).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {data.some(s => s.isDelayed) && (
+            <div className="mt-2 bg-red-50 border border-red-200 rounded-lg p-2">
+              <p className="text-red-800 text-xs font-medium">
+                ⚠️ {data.filter(s => s.isDelayed).length} shipment(s) at risk
+              </p>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

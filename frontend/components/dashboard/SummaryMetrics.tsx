@@ -29,7 +29,7 @@ export function SummaryMetrics() {
   if (!data) return null;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mb-4">
       <MetricCard
         label="Total Orders (Today)"
         value={data.totalOrdersToday}
@@ -70,9 +70,9 @@ function MetricCard({ label, value, color }: MetricCardProps) {
   };
 
   return (
-    <div className={`rounded-lg shadow border-2 p-6 ${colorClasses[color]}`}>
-      <p className="text-sm font-medium opacity-80 mb-1">{label}</p>
-      <p className="text-3xl font-bold">{value}</p>
+    <div className={`rounded-lg shadow border-2 p-4 ${colorClasses[color]}`}>
+      <p className="text-xs font-medium opacity-80 mb-1">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
     </div>
   );
 }
