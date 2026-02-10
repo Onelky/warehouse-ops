@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ShipmentsService } from './shipments.service';
 import { ShipmentsController } from './shipments.controller';
-import { InMemoryStoreService } from '../data/in-memory-store.service';
 import { ShipmentsGateway } from './shipments.gateway';
 
+/**
+ * ShipmentsModule
+ *
+ * Handles all shipment-related operations (CRUD).
+ */
 @Module({
   controllers: [ShipmentsController],
-  providers: [ShipmentsService, ShipmentsGateway, InMemoryStoreService],
+  providers: [ShipmentsService, ShipmentsGateway],
   exports: [ShipmentsService],
 })
 export class ShipmentsModule {}
