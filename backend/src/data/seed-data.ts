@@ -12,7 +12,7 @@ import {
  * Seed the in-memory store with realistic mock data
  *
  * Generates:
- * - 80 orders distributed across all statuses
+ * - 30 orders distributed across all statuses
  * - 15 inbound shipments with various statuses
  * - 15 outbound shipments with various statuses
  * - Realistic timestamps spread throughout the day
@@ -48,13 +48,16 @@ export function seedData(store: InMemoryStoreService): void {
   const assignedUsers = Object.values(AssignedUser);
 
   // Create 80 orders distributed across statuses
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 80; i++) {
     const status = random(orderStatuses);
     const hasUser = [
       OrderStatus.PICKING_IN_PROGRESS,
       OrderStatus.PICKED,
       OrderStatus.AUDIT_IN_PROGRESS,
     ].includes(status);
+
+    // Create timestamp spread throughout today (0-12 hours ago)
+    const createdAt = hoursAgo(randomInt(0, 12));
 
     const order = store.createOrder({
       status,
@@ -65,9 +68,9 @@ export function seedData(store: InMemoryStoreService): void {
       healthScore: undefined, // TODO: Calculate later
     });
 
-    // Adjust createdAt to be spread throughout the day
-    order.createdAt = hoursAgo(randomInt(0, 12));
-    order.updatedAt = order.createdAt;
+    // Override timestamps to be within today
+    order.createdAt = createdAt;
+    order.updatedAt = createdAt;
   }
 
   // ==================== SEED INBOUND SHIPMENTS ====================
