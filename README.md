@@ -485,10 +485,9 @@ Key fields (including ones added for the dashboard) and how they’re used:
   - Location-based picking optimization
 
 
-- [ ] **Mobile Responsive Design** - Optimize for tablets and mobile devices
+- [ ] **Better UI/UX design** 
+  - The design of the dashboard is pretty basic currently and doesn't have a clear visual identity.
   - Responsive layouts for smaller screens
-  - Touch-friendly controls
-  - Progressive Web App (PWA) support
   - Offline capability for basic operations
 
 
