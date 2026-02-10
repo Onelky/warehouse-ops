@@ -2,10 +2,10 @@
 
 import { useTableCarousel } from '@/hooks/useTableCarousel';
 
-export interface TableColumn<T> {
+export interface TableColumn<T, K extends keyof T = keyof T> {
   header: string;
-  dataField: keyof T;
-  render?: (value: T[keyof T], row: T) => React.ReactNode;
+  dataField: K;
+  render?: (value: T[K], row: T) => React.ReactNode;
   className?: string;
   headerClassName?: string;
 }
@@ -42,7 +42,7 @@ export function CarouselTable<T>({
 
   if (isLoading) {
     return (
-      <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
         <h2 className="text-lg font-bold mb-3 text-gray-800">{title}</h2>
         <div className="animate-pulse space-y-3">
           {[...Array(3)].map((_, i) => (
@@ -55,7 +55,7 @@ export function CarouselTable<T>({
 
   if (error) {
     return (
-      <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+      <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
         <h2 className="text-lg font-bold mb-3 text-gray-800">{title}</h2>
         <div className="bg-red-50 border border-red-200 rounded p-4">
           <p className="text-red-800 text-sm">Failed to load data</p>
@@ -65,7 +65,7 @@ export function CarouselTable<T>({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 h-[280px] flex flex-col">
+    <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex flex-col">
       <h2 className="text-lg font-bold mb-3 text-gray-800">{title}</h2>
 
       {!data || data.length === 0 ? (
