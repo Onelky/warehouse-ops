@@ -25,6 +25,9 @@ export function ShipmentForm({ shipment, onSuccess }: ShipmentFormProps) {
   const [formData, setFormData] = useState({
     carrier: shipment?.carrier || '',
     eta: shipment?.eta ? new Date(shipment.eta).toISOString().slice(0, 16) : '',
+    actualArrivalTime: shipment?.actualArrivalTime
+      ? new Date(shipment.actualArrivalTime).toISOString().slice(0, 16)
+      : '',
     pallets: shipment?.pallets || 0,
     dock: shipment?.dock || '',
     status: shipment?.status || '',
@@ -38,6 +41,9 @@ export function ShipmentForm({ shipment, onSuccess }: ShipmentFormProps) {
       const data = {
         ...formData,
         eta: new Date(formData.eta).toISOString(),
+        actualArrivalTime: formData.actualArrivalTime
+          ? new Date(formData.actualArrivalTime).toISOString()
+          : undefined,
       };
 
       if (shipment) {
@@ -123,6 +129,25 @@ export function ShipmentForm({ shipment, onSuccess }: ShipmentFormProps) {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           required
         />
+      </div>
+
+      {/* Actual arrival time */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Actual arrival time (optional)
+        </label>
+        <input
+          type="datetime-local"
+          value={formData.actualArrivalTime}
+          onChange={(e) =>
+            setFormData({ ...formData, actualArrivalTime: e.target.value })
+          }
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Set when the shipment actually arrived or left. Required for Summary
+          on-time % when status is CLOSED (on-time if ≤ ETA).
+        </p>
       </div>
 
       {/* Pallets */}
