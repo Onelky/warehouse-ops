@@ -1,0 +1,111 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Install Backend Dependencies",
+      "type": "npm",
+      "script": "install",
+      "path": "backend/",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install Frontend Dependencies",
+      "type": "npm",
+      "script": "install",
+      "path": "frontend/",
+      "group": "none",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install All Dependencies",
+      "dependsOn": ["Install Backend Dependencies", "Install Frontend Dependencies"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Setup Frontend Environment",
+      "type": "shell",
+      "command": "cp",
+      "args": [".env.example", ".env.local"],
+      "windows": {
+        "command": "copy",
+        "args": [".env.example", ".env.local"]
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Complete Project Setup",
+      "dependsOn": ["Install All Dependencies", "Setup Frontend Environment"],
+      "dependsOrder": "sequence",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Run Backend",
+      "type": "npm",
+      "script": "start:dev",
+      "path": "backend/",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*starting.*$",
+          "endsPattern": "^.*started.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Run Frontend",
+      "type": "npm",
+      "script": "dev",
+      "path": "frontend/",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$"
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*compiling.*$",
+          "endsPattern": "^.*compiled.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "dev"
+      }
+    },
+    {
+      "label": "Run Full Stack",
+      "dependsOn": ["Run Backend", "Run Frontend"],
+      "problemMatcher": []
+    }
+  ]
+}
