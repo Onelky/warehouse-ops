@@ -91,7 +91,7 @@ export default function DashboardPage() {
           {/* Row 2 */}
           <AuditWidget />
           <OutboundWidget />
-          <div className="bg-white rounded-lg shadow p-4 h-[280px] flex items-center justify-center text-gray-400">
+          <div className="bg-white rounded-lg shadow p-4 h-[calc((100vh-300px)/2)] flex items-center justify-center text-gray-400">
             <p className="text-sm">Additional Widget Space</p>
           </div>
         </div>
