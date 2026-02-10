@@ -44,8 +44,8 @@ This dashboard is designed to be displayed on large screens throughout a warehou
    - Visual connection status indicator
 
 ### Admin Interface
-- Create, view, edit, and delete orders
-- Create, view, edit, and delete shipments
+- Create, view and edit orders
+- Create, view, and edit shipments (including **Actual arrival time** for on-time %)
 - Form validation and error handling
 - Changes immediately reflect on dashboard
 
@@ -53,7 +53,7 @@ This dashboard is designed to be displayed on large screens throughout a warehou
 
 ```
 warehouse-ops/
-├── backend/              # NestJS backend (to be implemented)
+├── backend/              # NestJS backend
 │   ├── src/
 │   │   ├── orders/      # Orders module
 │   │   ├── shipments/   # Shipments module
@@ -72,34 +72,98 @@ warehouse-ops/
 ## Getting Started
 
 ### Prerequisites
-- Node.js 18+ and npm
-- Git
+- **Node.js 18+** and npm (Download from [nodejs.org](https://nodejs.org/))
+- **Git** (Download from [git-scm.com](https://git-scm.com/))
 
-### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd warehouse-ops
-   ```
+### Installation & Setup
 
-2. **Backend Setup**
-   ```bash
-   cd backend
-   npm install
-   # Configure backend as needed
-   npm run start:dev
-   ```
-   Backend will run on `http://localhost:3001`
+Follow these steps to get the project running on your local machine:
 
-3. **Frontend Setup**
-   ```bash
-   cd frontend
-   npm install
-   # Copy .env.example to .env.local and configure
-   npm run dev
-   ```
-   Frontend will run on `http://localhost:3000`
+#### 1. Clone the Repository
+```bash
+git clone git@github.com:Onelky/warehouse-ops.git
+cd warehouse-ops
+```
+
+
+### Quick Start
+
+**Option A: Using VS Code (Recommended)**
+
+If you're using VS Code, you can set up and run everything with built-in commands:
+
+1. **One-Time Setup**:
+   - Press `Ctrl+Shift+P` (Windows/Linux) or `Cmd+Shift+P` (macOS)
+   - Type "Tasks: Run Task" and press Enter
+   - Select **"Complete Project Setup"** from the list
+   - This installs all dependencies AND creates the `.env.local` file
+
+2. **Run the application**:
+   - Press `F5` or go to **Run and Debug** (Ctrl+Shift+D / Cmd+Shift+D)
+   - Select **"Full Stack (Frontend + Backend)"** from the dropdown
+   - Click the green play button
+
+Both servers will start in separate integrated terminals. To stop both, click the stop button or press Shift+F5.
+
+**How to see all available VS Code tasks:**
+- Press `Ctrl+Shift+P` → Type "Tasks: Run Task" → See full list
+- Or click **Terminal** menu → **Run Task...**
+
+**Option B: Using Terminal**
+
+```bash
+# Terminal 1 - Backend
+cd backend
+npm install
+npm run start:dev
+
+# Terminal 2 - Frontend (in a new terminal)
+cd frontend
+npm install
+cp .env.example .env.local  # or 'copy' on Windows
+npm run dev
+```
+
+
+#### 4. Access the Application
+
+Open your web browser and navigate to:
+- **Dashboard**: http://localhost:3000
+- **Admin Panel**: http://localhost:3000/admin
+
+### VS Code Integration
+
+This project includes VS Code configurations for an enhanced development experience. The `.vscode` folder contains:
+- **launch.json** - Debug and run configurations
+- **tasks.json** - Automated tasks for common operations
+- **settings.json** - Recommended workspace settings
+
+#### Launch Configurations (Run and Debug)
+
+Available configurations in the **Run and Debug** panel (F5):
+
+- **Full Stack (Frontend + Backend)** - Runs both servers simultaneously (recommended)
+- **Backend (Dev)** - Run backend only in development mode
+- **Backend (Debug)** - Run backend with debugger attached
+- **Frontend (Dev)** - Run frontend only in development mode
+
+#### Tasks
+
+Available tasks via **Terminal > Run Task** (or `Ctrl+Shift+P` → "Tasks: Run Task"):
+
+**Setup Tasks:**
+- **Complete Project Setup** - Full setup: installs all dependencies + creates .env.local (recommended for first-time setup)
+- **Install All Dependencies** - Install npm packages for both frontend and backend (also available as build task: `Ctrl+Shift+B`)
+- **Install Backend Dependencies** - Install backend packages only
+- **Install Frontend Dependencies** - Install frontend packages only
+- **Setup Frontend Environment** - Creates .env.local from .env.example
+
+**Run Tasks:**
+- **Run Full Stack** - Start both servers (alternative to launch config)
+- **Run Backend** - Start backend only
+- **Run Frontend** - Start frontend only
+
 
 ### Environment Variables
 
@@ -107,6 +171,8 @@ warehouse-ops/
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
+
+**Backend**: No environment variables required for local development
 
 ## Usage
 
@@ -120,6 +186,104 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
    - Edit existing records
    - Delete records
    - Changes appear on dashboard instantly
+
+## Admin → Dashboard: What to Change Where
+
+Use the Admin Panel to add or edit data; the dashboard updates in real time. This section maps **what you want to change on the dashboard** to **what to do in Admin**.
+
+---
+
+### Wanna change the **Summary Metrics** (top bar)?
+
+**Do this:**
+- **Total orders (today)** — In Admin → **Orders**: create a new order, or edit an existing one. Only orders created *today* are counted.
+- **Total units** — In Admin → **Orders**: create or edit orders and set **Units**. The bar shows the sum of all orders’ units.
+- **Total pallets** — In Admin → **Orders**: create or edit orders and set **Pallets**. The bar shows the sum of all orders’ pallets.
+- **On-time %** — In Admin → **Shipments**: for shipments you want to count as “completed,” set **Status** to `CLOSED` and set **Actual arrival time**. If actual arrival ≤ ETA, they count as on-time. The percentage is (on-time closed shipments / all closed shipments).
+
+| *Screenshot: Dashboard summary bar* |
+|------------------------------------|
+| ![Dashboard summary bar](docs/screenshots/dashboard-summary.png) |
+
+---
+
+### Wanna change the **Receiving** widget?
+
+**Do this:**  
+In Admin → **Shipments**: create or edit a shipment and set:
+- **Flow type** = `INBOUND`
+- **Status** = `SCHEDULED`, `ARRIVED`, or `UNLOADING`
+
+Only inbound shipments with one of those three statuses appear in Receiving.  
+*Tip:* Set **ETA** in the past (or leave **Actual arrival time** empty) to see the row highlighted as delayed (at-risk).
+
+| *Screenshot: Receiving widget* |
+|-------------------------------|
+| ![Receiving widget](docs/screenshots/dashboard-receiving.png) |
+
+---
+
+### Wanna change the **Put Away** widget?
+
+**Do this:**  
+In Admin → **Shipments**: create or edit **inbound** shipments and set:
+- **Status** = `PUT_AWAY_PENDING` → counts toward “Pallets pending”
+- **Status** = `PUT_AWAY_IN_PROGRESS` → counts toward “Pallets in progress”
+- **Status** = `STORED` (and Flow type = INBOUND) → their pallets count toward warehouse capacity
+
+The “Available locations” and capacity % are derived from total stored pallets (max 500). Change **Pallets** on shipments to move the numbers.
+
+| *Screenshot: Put Away widget* |
+|------------------------------|
+| ![Put Away widget](docs/screenshots/dashboard-putaway.png) |
+
+---
+
+### Wanna change the **Picking** widget?
+
+**Do this:**  
+In Admin → **Orders**: create or edit an order and set:
+- **Status** = `PICKING_PENDING` or `PICKING_IN_PROGRESS`
+
+Only orders with those two statuses appear in the Picking table. You can set **Assigned user** and **Priority score** to see them on the dashboard.
+
+| *Screenshot: Picking widget* |
+|-----------------------------|
+| ![Picking widget](docs/screenshots/dashboard-picking.png) |
+
+---
+
+### Wanna change the **Pre-Ship Audit** widget?
+
+**Do this:**  
+In Admin → **Orders**: create or edit orders and set:
+- **Status** = `AUDIT_PENDING` → “Orders waiting”
+- **Status** = `AUDIT_IN_PROGRESS` → “Orders being audited”
+- **Status** = `AUDIT_PASSED` → “Passed” count and improves pass rate
+- **Status** = `AUDIT_FAILED` → “Failed” count and lowers pass rate
+
+Pass rate = Passed / (Passed + Failed). Add or change orders with these statuses to see the stats and rate update.
+
+| *Screenshot: Pre-Ship Audit widget* |
+|------------------------------------|
+| ![Pre-Ship Audit widget](docs/screenshots/dashboard-audit.png) |
+
+---
+
+### Wanna change the **Outbound** widget?
+
+**Do this:**  
+In Admin → **Shipments**: create or edit a shipment and set:
+- **Flow type** = `OUTBOUND`
+- **Status** = `SCHEDULED`, `READY_TO_SHIP`, or `LOADING`
+
+Only outbound shipments with one of those three statuses appear in Outbound.  
+*Tip:* Set **ETA** in the past (or leave **Actual arrival time** empty) to see the row highlighted as at-risk/delayed.
+
+| *Screenshot: Outbound widget* |
+|------------------------------|
+| ![Outbound widget](docs/screenshots/dashboard-outbound.png) |
+
 
 ## Data Models
 
@@ -154,6 +318,43 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
   isDelayed: boolean; // Calculated field
 }
 ```
+
+### Data fields explained
+
+Key fields (including ones added for the dashboard) and how they’re used:
+
+#### Shipment fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **flowType** | `INBOUND` \| `OUTBOUND` | **Determines which dashboard widget the shipment appears in.** `INBOUND` → Receiving and Put Away widgets. `OUTBOUND` → Outbound widget. Required when creating/editing a shipment. |
+| **status** | ShipmentStatus | Current stage (e.g. `SCHEDULED`, `ARRIVED`, `UNLOADING`, `PUT_AWAY_PENDING`, `STORED`, `READY_TO_SHIP`, `LOADING`, `CLOSED`). Together with `flowType`, controls whether a shipment shows in Receiving, Put Away, or Outbound. |
+| **eta** | Date | Estimated time of arrival (or departure for outbound). Used to compute **on-time %** and to highlight delayed shipments. |
+| **actualArrivalTime** | Date (optional) | When the shipment actually arrived (or left). Editable in the Admin shipment form as **Actual arrival time**. Set when closing a shipment; if `actualArrivalTime ≤ eta`, it counts as on-time in the Summary bar. Only shipments with status `CLOSED` and a set actual arrival time are included in the on-time % calculation. |
+| **isDelayed** | boolean | **Calculated by the backend** (not stored). `true` when the shipment is not yet closed and the current time is past `eta`. Used to show at-risk rows on the dashboard. |
+| **carrier** | Carrier | e.g. `FEDEX`, `UPS`, `DHL`, `USPS`, `FREIGHT_CO`. |
+| **dock** | Dock | Dock assignment (`DOCK_1` … `DOCK_20`). |
+| **pallets** | number | Number of pallets; used in Put Away stats and warehouse capacity. |
+
+#### Order fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| **status** | OrderStatus | Current stage (e.g. `CREATED`, `PICKING_PENDING`, `PICKING_IN_PROGRESS`, `AUDIT_PENDING`, `AUDIT_PASSED`, `AUDIT_FAILED`, `SHIPPED`, `CLOSED`). Determines whether the order appears in the Picking or Pre-Ship Audit widget. |
+| **assignedUser** | AssignedUser (optional) | Which picker is assigned (`PICKER_1` … `PICKER_5`). Shown in the Picking widget. |
+| **priorityScore** | number (optional) | Priority for picking; can be used for ordering or highlighting in the Picking widget. |
+| **healthScore** | number (optional) | **Reserved for future use.** Will drive health/risk indicators once the calculation formula is defined. |
+| **units** | number | Unit count; summed in the Summary bar “Total units”. |
+| **pallets** | number | Pallet count; summed in the Summary bar “Total pallets”. |
+
+#### Enums reference
+
+- **OrderStatus**: `CREATED`, `PICKING_PENDING`, `PICKING_IN_PROGRESS`, `PICKED`, `AUDIT_PENDING`, `AUDIT_IN_PROGRESS`, `AUDIT_FAILED`, `AUDIT_PASSED`, `SHIPPING_PENDING`, `SHIPPING`, `SHIPPED`, `CLOSED`
+- **ShipmentStatus**: `SCHEDULED`, `ARRIVED`, `UNLOADING`, `PUT_AWAY_PENDING`, `PUT_AWAY_IN_PROGRESS`, `STORED`, `READY_TO_SHIP`, `LOADING`, `CLOSED`
+- **FlowType**: `INBOUND`, `OUTBOUND`
+- **Carrier**: `FEDEX`, `UPS`, `DHL`, `USPS`, `FREIGHT_CO`
+- **Dock**: `DOCK_1` … `DOCK_20`
+- **AssignedUser**: `PICKER_1` … `PICKER_5`
 
 ## API Endpoints
 
@@ -203,43 +404,125 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 - Focus on WebSocket functionality (core requirement)
 - Easy to add database persistence later (Prisma + SQLite/PostgreSQL)
 - Sufficient for trial/demo purposes
+- No database setup complexity during initial development
 
 ### Why Socket.io?
 - Built-in reconnection logic
 - Room support for future scaling
 - Excellent NestJS integration
 - Fallback to polling if WebSocket unavailable
+- Handles network interruptions gracefully
 
 ### Why React Query?
 - Automatic caching and refetching
 - Optimistic updates
 - Built-in loading and error states
 - Works seamlessly with WebSocket invalidation
+- Reduces boilerplate for data fetching
 
 ### Why Axios Interceptors?
 - Centralized error handling
 - Easy to add authentication later
 - Request/response logging
-- Consistent API calls
+- Consistent API calls across the application
+
+### Why Carousel Pagination for Dashboard Tables?
+**Problem**: Large datasets on dashboard tables would require scrolling, which is problematic for:
+- Wall-mounted displays where users can't interact with the screen
+- Quick glanceability - users need to see information at a glance without interaction
+- Fixed viewport constraints on large screens
+
+**Solution**: Auto-rotating carousel pagination
+- Tables automatically cycle through pages every 5 seconds
+- Shows 5 rows per page by default (configurable via `rowsPerPage` prop)
+- Page indicator at bottom shows "Page 1 of 3" for context
+- No manual interaction required - perfect for passive monitoring
+- Implemented via `CarouselTable` component with `useTableCarousel` hook
+- Resets to page 1 when data changes to ensure new items are visible
+
+| ![Outbound widget](docs/screenshots/table-pagination.png) |
+
+
+
+### Why Custom Hooks for Data Fetching?
+- Encapsulates WebSocket subscription logic
+- Centralizes React Query configuration
+- Automatic cache invalidation on real-time updates
+- Reusable across components (`useOrders`, `useShipments`, `useDashboard`)
+- Separates data fetching concerns from UI rendering 
 
 ## Future Improvements
 
-- [ ] Add database persistence (Prisma + PostgreSQL)
-- [ ] User authentication and authorization
-- [ ] Health score calculation formula
-- [ ] Individual pallet tracking with locations
-- [ ] Historical data and analytics
-- [ ] Mobile responsive optimization
-- [ ] Barcode scanning integration
-- [ ] Print labels for orders/shipments
-- [ ] Advanced filtering and search
-- [ ] Pagination for large datasets
+### High Priority
+- [ ] **Database Persistence** - Replace in-memory storage with Prisma + PostgreSQL
+  - Add data persistence across server restarts
+  - Enable historical data tracking
+  - Support concurrent users reliably
+  
+- [ ] **User Authentication & Authorization** - Add secure login system
+  - Role-based access control (Admin, Picker, Manager, Viewer)
+  - JWT-based authentication
+  - Protected routes and API endpoints
+  - Audit logs for data changes
+
+- [ ] **Health Score Calculation** - Implement order health scoring algorithm
+  - Factor in: time until deadline, completion percentage, resource availability
+  - Visual indicators for at-risk orders
+  - Predictive alerts for potential delays
+
+### Medium Priority
+- [ ] **Individual Pallet Tracking** - Track pallets with warehouse locations
+  - Assign location codes (aisle, rack, level)
+  - Track pallet movement history
+  - Visual warehouse map
+  - Location-based picking optimization
+
+- [ ] **Historical Data & Analytics** - Add reporting and trends
+  - Daily/weekly/monthly performance metrics
+  - Throughput analysis by dock, user, carrier
+  - Identify bottlenecks and optimization opportunities
+  - Export reports to CSV/PDF
+
+- [ ] **Mobile Responsive Design** - Optimize for tablets and mobile devices
+  - Responsive layouts for smaller screens
+  - Touch-friendly controls
+  - Progressive Web App (PWA) support
+  - Offline capability for basic operations
+
+
+- [ ] **Advanced Filtering & Search** - Improve data discovery
+  - Full-text search across orders and shipments
+  - Multi-field filtering
+  - Saved filter presets
+  - Quick filters for common queries
+
+- [ ] **Manual Pagination Controls** - Add user-controlled pagination for admin views
+  - Previous/Next buttons for admin tables
+  - Page size selector (10, 25, 50, 100 rows)
+  - Jump to page input
+  - Keep auto-carousel for dashboard, add manual controls for admin
+
+- [ ] **Notifications System** - Real-time alerts for critical events
+  - Browser notifications for delayed shipments
+  - Configurable notification rules
+  - Notification history
+
+- [ ] **Dark Mode** - Add dark theme option
+  - Better for low-light warehouse environments
+  - Reduce eye strain for long monitoring sessions
+  - Automatic theme switching based on time
+
+- [ ] **Multi-Warehouse Support** - Scale to multiple warehouse locations
+  - Warehouse selection/switching
+  - Cross-warehouse inventory visibility
+  - Transfer orders between warehouses
 
 ## Development Notes
 
-- Dashboard designed for large screen displays
+- Dashboard designed for large screen displays (1920x1080 or larger recommended)
 - Auto-reconnects WebSocket on connection loss
-- Fallback polling every 30 seconds
-- Color-coded status indicators
-- At-risk highlighting for delayed shipments
-- No authentication (as per requirements)
+- Fallback polling every 30 seconds if WebSocket unavailable
+- Color-coded status indicators for quick visual scanning
+- At-risk highlighting for delayed shipments (red background)
+- No authentication system (add before production use)
+- Tables auto-rotate through pages every 30 seconds for passive monitoring
